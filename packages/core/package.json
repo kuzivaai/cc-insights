@@ -8,12 +8,12 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
     "./parser": {
-      "import": "./dist/parser/index.mjs",
+      "import": "./dist/parser/index.js",
       "require": "./dist/parser/index.cjs",
       "types": "./dist/parser/index.d.ts"
     }
