@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 // Import from the core library - these are workspace dependencies
 // @ts-ignore - workspace link may not resolve at typecheck time in all configs
-import { analyseClaudeMdHealth, createDefaultContext, DEFAULT_THRESHOLDS } from '@cc-insights/core';
+import { analyseClaudeMdHealth, createDefaultContext, DEFAULT_THRESHOLDS } from '@ccinsights/core';
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;

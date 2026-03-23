@@ -1,6 +1,6 @@
 # cc-insights
 
-Actionable intelligence library for Claude Code. Monorepo with `@cc-insights/core` (npm library) and `cc-insights` (VS Code extension).
+Actionable intelligence library for Claude Code. Monorepo with `@ccinsights/core` (npm library) and `cc-insights` (VS Code extension).
 
 ## Commands
 

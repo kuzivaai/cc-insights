@@ -2,13 +2,13 @@
 
 Linter for CLAUDE.md files and Claude Code sessions. Finds stale references, bloat, missing commands, and tool failure patterns.
 
-Ships as an npm library (`@cc-insights/core`) and a VS Code extension.
+Ships as an npm library (`@ccinsights/core`) and a VS Code extension.
 
 ## Install
 
 **Library:**
 ```bash
-npm install @cc-insights/core
+npm install @ccinsights/core
 ```
 
 **VS Code:** search "CC Insights" in the Extensions marketplace.
@@ -16,7 +16,7 @@ npm install @cc-insights/core
 ## Library usage
 
 ```typescript
-import { analyse } from '@cc-insights/core';
+import { analyse } from '@ccinsights/core';
 
 const result = await analyse({ claudeDir: '~/.claude' });
 console.log(result.insights);

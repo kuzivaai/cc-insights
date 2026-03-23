@@ -1,5 +1,5 @@
 {
-  "name": "@cc-insights/core",
+  "name": "@ccinsights/core",
   "version": "0.1.0",
   "description": "Lint and analyse CLAUDE.md files. Finds stale references, bloat, missing commands, and tool failure patterns.",
   "author": "kuzivaai",

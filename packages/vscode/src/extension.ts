@@ -3,7 +3,7 @@ import { activate as activateDiagnostics, reanalyseCurrentDocument } from './dia
 import { QuickFixProvider } from './codeactions/quickfix';
 
 // @ts-ignore - workspace link
-import { analyseClaudeMdHealth, createDefaultContext, DEFAULT_THRESHOLDS } from '@cc-insights/core';
+import { analyseClaudeMdHealth, createDefaultContext, DEFAULT_THRESHOLDS } from '@ccinsights/core';
 
 export function activate(context: vscode.ExtensionContext): void {
   activateDiagnostics(context);
