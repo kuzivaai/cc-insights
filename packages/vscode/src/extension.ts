@@ -10,7 +10,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Register code action provider
   context.subscriptions.push(
-    vscode.languages.registerCodeActionProvider(
+    vscode.languages.registerCodeActionsProvider(
       { pattern: '**/CLAUDE.md' },
       new QuickFixProvider(),
       { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix] },
