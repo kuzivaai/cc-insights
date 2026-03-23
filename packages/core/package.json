@@ -4,18 +4,17 @@
   "description": "Actionable intelligence for Claude Code — CLAUDE.md health analysis, insight rules, and session diagnostics",
   "type": "module",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     },
     "./parser": {
+      "types": "./dist/parser/index.d.ts",
       "import": "./dist/parser/index.js",
-      "require": "./dist/parser/index.cjs",
-      "types": "./dist/parser/index.d.ts"
+      "require": "./dist/parser/index.cjs"
     }
   },
   "files": [
