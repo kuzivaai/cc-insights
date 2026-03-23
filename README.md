@@ -1,17 +1,17 @@
-# cc-insights — Actionable intelligence for Claude Code
+# cc-insights
 
-Analyses your CLAUDE.md files and Claude Code session history to surface prescriptive
-fixes — not just metrics. Detects stale file references, missing build commands, bloat,
-and recurring tool failures. Ships as an npm library and a VS Code extension.
+Linter for CLAUDE.md files and Claude Code sessions. Finds stale references, bloat, missing commands, and tool failure patterns.
+
+Ships as an npm library (`@cc-insights/core`) and a VS Code extension.
 
 ## Install
 
-**Library**
+**Library:**
 ```bash
 npm install @cc-insights/core
 ```
 
-**VS Code extension** — search "CC Insights" in the Extensions marketplace.
+**VS Code:** search "CC Insights" in the Extensions marketplace.
 
 ## Library usage
 
@@ -22,27 +22,34 @@ const result = await analyse({ claudeDir: '~/.claude' });
 console.log(result.insights);
 ```
 
+Each insight includes a `rule`, `severity`, `file`, `line`, and `suggestedFix`. Pass your own data instead of a directory path if you already have parsed sessions:
+
+```typescript
+const result = await analyse({ projects: myParsedData });
+```
+
 ## VS Code extension
 
-Open any CLAUDE.md file. Stale file and command references get squiggly underlines.
-Press `Ctrl+.` (or `Cmd+.` on macOS) on an underlined item for quick-fix suggestions.
+Open a CLAUDE.md file. Stale file and command references get underlined. Press `Ctrl+.` (or `Cmd+.`) on a warning for quick-fix options.
 
 ## Rules
 
-| ID | Detects |
-|----|---------|
-| `missing-claudemd` | Project has no CLAUDE.md — Claude has no project-specific instructions |
-| `thin-claudemd` | CLAUDE.md is too short to give Claude useful context |
-| `claudemd-bloat` | CLAUDE.md exceeds token budget — Claude reads the whole file every turn |
-| `missing-build-cmd` | No build, test, or lint commands — Claude cannot verify its own changes |
-| `stale-file-ref` | A referenced file path no longer exists on disk |
-| `stale-command-ref` | A referenced npm script is not present in package.json |
-| `false-starts` | Cluster of very short sessions suggesting repeated context loss |
-| `tool-error-pattern` | A tool is failing at a high rate with a recurring error category |
+| Rule | What it finds |
+|------|---------------|
+| `stale-file-ref` | File path in CLAUDE.md that no longer exists on disk |
+| `stale-command-ref` | npm script referenced in CLAUDE.md but missing from package.json |
+| `claudemd-bloat` | CLAUDE.md over 300 lines or 1800 tokens |
+| `thin-claudemd` | CLAUDE.md under 10 lines |
+| `missing-claudemd` | Project with sessions but no CLAUDE.md |
+| `missing-build-cmd` | No build/test/lint commands in CLAUDE.md |
+| `tool-error-pattern` | A tool failing at a high rate across sessions |
+| `false-starts` | Multiple very short sessions on the same day |
+
+All thresholds are configurable via `analyse({ thresholds: { ... } })`.
 
 ## Privacy
 
-No telemetry. No network calls. All analysis runs locally against files on your machine.
+No telemetry. No network calls. Everything runs locally.
 
 ## Licence
 

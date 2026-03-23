@@ -1,7 +1,15 @@
 {
   "name": "@cc-insights/core",
   "version": "0.1.0",
-  "description": "Actionable intelligence for Claude Code — CLAUDE.md health analysis, insight rules, and session diagnostics",
+  "description": "Lint and analyse CLAUDE.md files. Finds stale references, bloat, missing commands, and tool failure patterns.",
+  "author": "kuzivaai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kuzivaai/cc-insights.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/kuzivaai/cc-insights",
+  "bugs": "https://github.com/kuzivaai/cc-insights/issues",
   "type": "module",
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
