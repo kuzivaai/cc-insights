@@ -7,6 +7,10 @@ import { thinClaudeMd } from './thin-claudemd.js';
 import { missingBuildCmd } from './missing-build-cmd.js';
 import { toolErrorPattern } from './tool-error-pattern.js';
 import { falseStarts } from './false-starts.js';
+import { fillerPhrase } from './filler-phrase.js';
+import { staleImport } from './stale-import.js';
+import { noStructure } from './no-structure.js';
+import { redundantConfig } from './redundant-config.js';
 
 export const ALL_RULES: Rule[] = [
   staleFileRef,
@@ -17,4 +21,8 @@ export const ALL_RULES: Rule[] = [
   missingBuildCmd,
   toolErrorPattern,
   falseStarts,
+  fillerPhrase,
+  staleImport,
+  noStructure,
+  redundantConfig,
 ];
