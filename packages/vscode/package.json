@@ -48,10 +48,8 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
-  "dependencies": {
-    "@ccinsights/core": "workspace:*"
-  },
   "devDependencies": {
+    "@ccinsights/core": "workspace:*",
     "@types/vscode": "^1.85.0",
     "esbuild": "^0.20.0"
   }
