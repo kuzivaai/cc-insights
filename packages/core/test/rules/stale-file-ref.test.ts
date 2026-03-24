@@ -51,6 +51,43 @@ describe('staleFileRef rule', () => {
     expect(insights[0].evidence).toMatchObject({ reference: 'src/deleted.ts', line: 4 });
   });
 
+  it('populates section field from heading context', async () => {
+    const content = [
+      '# Project',
+      '',
+      'See `src/deleted.ts` for details.',
+    ].join('\n');
+
+    const project = makeProject({ claudeMdContent: content, claudeMdPath: '/project/CLAUDE.md' });
+    const ctx = mockCtx([]);
+
+    const insights = await staleFileRef(project, ctx);
+
+    expect(insights).toHaveLength(1);
+    expect(insights[0].evidence).toMatchObject({ section: 'Project' });
+    expect(insights[0].message).toContain('"Project"');
+  });
+
+  it('uses correct section when ref is under a nested heading', async () => {
+    const content = [
+      '# Overview',
+      '',
+      'Some intro.',
+      '',
+      '## Architecture',
+      '',
+      'See `src/missing.ts` for the architecture.',
+    ].join('\n');
+
+    const project = makeProject({ claudeMdContent: content, claudeMdPath: '/project/CLAUDE.md' });
+    const ctx = mockCtx([]);
+
+    const insights = await staleFileRef(project, ctx);
+
+    expect(insights).toHaveLength(1);
+    expect(insights[0].evidence).toMatchObject({ section: 'Architecture' });
+  });
+
   it('returns 0 insights when all file references are valid', async () => {
     const content = 'See `src/index.ts` and `src/utils.ts`.';
     const project = makeProject({ claudeMdContent: content, claudeMdPath: '/project/CLAUDE.md' });

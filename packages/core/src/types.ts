@@ -14,13 +14,6 @@ export interface ToolCall {
   errorCategory?: ErrorCategory;
 }
 
-export interface ErrorEvent {
-  timestamp: Date;
-  tool: string;
-  message: string;
-  category: ErrorCategory;
-}
-
 export interface SessionData {
   file: string;
   startTime: Date;
@@ -31,7 +24,6 @@ export interface SessionData {
   cacheReadTokens: number;
   cacheCreationTokens: number;
   toolCalls: ToolCall[];
-  errors: ErrorEvent[];
   model: string;
 }
 

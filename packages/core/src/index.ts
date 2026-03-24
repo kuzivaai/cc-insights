@@ -63,6 +63,6 @@ export { DEFAULT_THRESHOLDS } from './defaults.js';
 // Re-export types
 export type {
   Insight, HealthReport, Section, StaleReference, Thresholds, RuleContext,
-  ProjectData, SessionData, ToolCall, ErrorEvent, ErrorCategory,
+  ProjectData, SessionData, ToolCall, ErrorCategory,
   AnalyseOptions, AnalyseResult, ParseResult, Rule,
 } from './types.js';

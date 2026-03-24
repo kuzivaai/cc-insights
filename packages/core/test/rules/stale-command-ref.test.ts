@@ -51,6 +51,23 @@ describe('staleCommandRef rule', () => {
     expect(insights[0].evidence).toMatchObject({ line: 4 });
   });
 
+  it('populates section field from heading context', async () => {
+    const content = [
+      '## Commands',
+      '',
+      'Run `npm run deploy` to ship.',
+    ].join('\n');
+
+    const project = makeProject({ claudeMdContent: content, claudeMdPath: '/project/CLAUDE.md' });
+    const ctx = mockCtx([], {});
+
+    const insights = await staleCommandRef(project, ctx);
+
+    expect(insights).toHaveLength(1);
+    expect(insights[0].evidence).toMatchObject({ section: 'Commands' });
+    expect(insights[0].message).toContain('"Commands"');
+  });
+
   it('returns 0 insights when all scripts exist in package.json', async () => {
     const content = 'Run `npm run build` and `npm run test`.';
     const project = makeProject({ claudeMdContent: content, claudeMdPath: '/project/CLAUDE.md' });

@@ -131,7 +131,6 @@ export function aggregateSession(filename: string, entries: JsonlEntry[]): Sessi
     cacheReadTokens,
     cacheCreationTokens,
     toolCalls,
-    errors: [],
     model,
   };
 }

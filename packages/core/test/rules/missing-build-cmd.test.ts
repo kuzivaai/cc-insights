@@ -12,51 +12,75 @@ function mockCtx(): RuleContext {
   };
 }
 
+function makeProject(claudeMdContent?: string): ProjectData {
+  return {
+    path: '/project',
+    name: 'TestProject',
+    claudeMdContent,
+    claudeMdPath: '/project/CLAUDE.md',
+    sessions: [],
+  };
+}
+
 describe('missingBuildCmd rule', () => {
-  it('returns warning when CLAUDE.md has no build/test/lint commands', async () => {
-    const project: ProjectData = {
-      path: '/project',
-      name: 'TestProject',
-      claudeMdContent: '# My Project\n\nThis is the project description.\n\nNo commands mentioned here.',
-      claudeMdPath: '/project/CLAUDE.md',
-      sessions: [],
-    };
-
+  it('returns warning when prose says "Run the tests manually" (no actual command)', async () => {
+    const project = makeProject('# Project\n\nRun the tests manually before deploying.');
     const insights = await missingBuildCmd(project, mockCtx());
-
     expect(insights).toHaveLength(1);
-    expect(insights[0]).toMatchObject({
-      rule: 'missing-build-cmd',
-      severity: 'warning',
-      category: 'claudemd',
-    });
+    expect(insights[0].rule).toBe('missing-build-cmd');
   });
 
-  it('returns 0 insights when CLAUDE.md contains npm run build', async () => {
-    const project: ProjectData = {
-      path: '/project',
-      name: 'TestProject',
-      claudeMdContent: '# Commands\n\nRun `npm run build` to compile the project.',
-      claudeMdPath: '/project/CLAUDE.md',
-      sessions: [],
-    };
-
+  it('returns warning when prose says "We test everything carefully" (no actual command)', async () => {
+    const project = makeProject('# QA\n\nWe test everything carefully and run checks.');
     const insights = await missingBuildCmd(project, mockCtx());
+    expect(insights).toHaveLength(1);
+  });
 
+  it('passes when code block contains npm run test', async () => {
+    const content = '# Commands\n\n```bash\nnpm run test\n```';
+    const project = makeProject(content);
+    const insights = await missingBuildCmd(project, mockCtx());
     expect(insights).toHaveLength(0);
   });
 
-  it('returns 0 insights when CLAUDE.md contains test command', async () => {
-    const project: ProjectData = {
-      path: '/project',
-      name: 'TestProject',
-      claudeMdContent: '# Verification\n\nRun the test suite before committing.',
-      claudeMdPath: '/project/CLAUDE.md',
-      sessions: [],
-    };
-
+  it('passes when backtick-wrapped command: `npm run build`', async () => {
+    const content = '# Build\n\nRun `npm run build` to compile.';
+    const project = makeProject(content);
     const insights = await missingBuildCmd(project, mockCtx());
+    expect(insights).toHaveLength(0);
+  });
 
+  it('passes when shell prompt: $ npm test', async () => {
+    const content = '# Verify\n\n$ npm test';
+    const project = makeProject(content);
+    const insights = await missingBuildCmd(project, mockCtx());
+    expect(insights).toHaveLength(0);
+  });
+
+  it('passes when pnpm command in code block', async () => {
+    const content = '```\npnpm build\n```';
+    const project = makeProject(content);
+    const insights = await missingBuildCmd(project, mockCtx());
+    expect(insights).toHaveLength(0);
+  });
+
+  it('passes for cargo test command', async () => {
+    const content = '```\ncargo test\n```';
+    const project = makeProject(content);
+    const insights = await missingBuildCmd(project, mockCtx());
+    expect(insights).toHaveLength(0);
+  });
+
+  it('passes for npx command in backticks', async () => {
+    const content = 'Run `npx tsc --noEmit` to type-check.';
+    const project = makeProject(content);
+    const insights = await missingBuildCmd(project, mockCtx());
+    expect(insights).toHaveLength(0);
+  });
+
+  it('returns 0 insights when claudeMdContent is absent', async () => {
+    const project = makeProject(undefined);
+    const insights = await missingBuildCmd(project, mockCtx());
     expect(insights).toHaveLength(0);
   });
 
@@ -68,21 +92,7 @@ describe('missingBuildCmd rule', () => {
       claudeMdPath: '/home/user/.claude/CLAUDE.md',
       sessions: [],
     };
-
     const insights = await missingBuildCmd(project, mockCtx());
-
-    expect(insights).toHaveLength(0);
-  });
-
-  it('returns 0 insights when claudeMdContent is absent', async () => {
-    const project: ProjectData = {
-      path: '/project',
-      name: 'TestProject',
-      sessions: [],
-    };
-
-    const insights = await missingBuildCmd(project, mockCtx());
-
     expect(insights).toHaveLength(0);
   });
 });
