@@ -55,6 +55,7 @@ export async function missingBuildCmd(project: ProjectData, _ctx: RuleContext): 
   if (project.name === 'Home') return [];
 
   if (!hasActualCommands(project.claudeMdContent)) {
+    const totalLines = project.claudeMdContent.split('\n').length;
     return [
       {
         rule: 'missing-build-cmd',
@@ -63,6 +64,12 @@ export async function missingBuildCmd(project: ProjectData, _ctx: RuleContext): 
         file: project.claudeMdPath,
         message: 'No build, test, or lint commands found. Add a Commands section so Claude can verify its work.',
         suggestedFix: 'Add a Commands section with actual build/test commands',
+        fix: {
+          description: 'Add commands section',
+          startLine: totalLines + 1,
+          endLine: totalLines + 1,
+          newText: '\n## Commands\n\n```bash\n# Add your build/test commands here\n```\n',
+        },
         evidence: {},
       },
     ];

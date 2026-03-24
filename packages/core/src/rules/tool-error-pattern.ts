@@ -37,7 +37,7 @@ export async function toolErrorPattern(project: ProjectData, ctx: RuleContext): 
 
     insights.push({
       rule: 'tool-error-pattern',
-      severity: 'warning',
+      severity: 'info',
       category: 'failure',
       message: `Tool \`${tool}\` fails ${Math.round(failureRate * 100)}% of the time — most common error: ${topCategory}`,
       suggestedFix: `Investigate why ${tool} is failing. Most common error: ${topCategory}`,

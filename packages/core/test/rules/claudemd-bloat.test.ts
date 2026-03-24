@@ -32,7 +32,7 @@ describe('claudemdBloat rule', () => {
     expect(insights).toHaveLength(1);
     expect(insights[0]).toMatchObject({
       rule: 'claudemd-bloat',
-      severity: 'warning',
+      severity: 'info',
       category: 'claudemd',
     });
     expect(insights[0].evidence).toHaveProperty('lines', 350);

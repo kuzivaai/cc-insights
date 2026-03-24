@@ -23,6 +23,7 @@ export async function staleFileRef(project: ProjectData, ctx: RuleContext): Prom
     line: ref.line,
     message: `Stale reference to \`${ref.reference}\` in "${ref.section}" — file not found`,
     suggestedFix: `Remove or update the reference to \`${ref.reference}\` at line ${ref.line}`,
+    fix: { description: 'Remove stale reference', startLine: ref.line, endLine: ref.line, newText: '' },
     evidence: { reference: ref.reference, line: ref.line, section: ref.section },
   }));
 }

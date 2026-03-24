@@ -23,6 +23,7 @@ export async function staleCommandRef(project: ProjectData, ctx: RuleContext): P
     line: ref.line,
     message: `Stale command reference \`${ref.reference}\` in "${ref.section}" — script not found in package.json`,
     suggestedFix: `Remove or update \`${ref.reference}\` at line ${ref.line}`,
+    fix: { description: 'Remove stale reference', startLine: ref.line, endLine: ref.line, newText: '' },
     evidence: { reference: ref.reference, line: ref.line, section: ref.section },
   }));
 }

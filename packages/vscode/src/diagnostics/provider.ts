@@ -1,11 +1,13 @@
 import * as vscode from 'vscode';
 
-// Import from the core library - these are workspace dependencies
-// @ts-ignore - workspace link may not resolve at typecheck time in all configs
-import { analyseClaudeMdHealth, createDefaultContext, DEFAULT_THRESHOLDS } from '@ccinsights/core';
+// @ts-ignore - workspace link
+import { analyse, type Insight } from '@ccinsights/core';
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+// Module-level insight storage for quickfix provider
+export const insightStore = new Map<string, Insight>();
 
 export function activate(context: vscode.ExtensionContext): void {
   diagnosticCollection = vscode.languages.createDiagnosticCollection('cc-insights');
@@ -41,82 +43,43 @@ async function analyseIfClaudeMd(doc: vscode.TextDocument): Promise<void> {
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(doc.uri);
   const projectCwd = workspaceFolder?.uri.fsPath || '';
 
-  const ctx = createDefaultContext(projectCwd, DEFAULT_THRESHOLDS);
-  const health = await analyseClaudeMdHealth(
-    workspaceFolder?.name || 'unknown',
-    doc.uri.fsPath,
-    doc.getText(),
-    ctx,
-  );
+  const result = await analyse({
+    projects: [{
+      path: projectCwd,
+      projectCwd,
+      name: workspaceFolder?.name || 'unknown',
+      claudeMdContent: doc.getText(),
+      claudeMdPath: doc.uri.fsPath,
+      sessions: [],
+    }],
+  });
+
+  // Clear previous insights for this document
+  for (const key of insightStore.keys()) {
+    if (key.startsWith(doc.uri.toString() + ':')) {
+      insightStore.delete(key);
+    }
+  }
 
   const diagnostics: vscode.Diagnostic[] = [];
 
-  // Stale file references
-  for (const ref of health.staleFileRefs) {
-    const line = Math.max(0, ref.line - 1);
-    const range = doc.lineAt(line).range;
-    const diag = new vscode.Diagnostic(
-      range,
-      `Stale reference: \`${ref.reference}\` — file not found`,
-      vscode.DiagnosticSeverity.Warning,
-    );
-    diag.code = 'stale-file-ref';
-    diag.source = 'cc-insights';
-    diagnostics.push(diag);
-  }
+  for (const insight of result.insights) {
+    const line = insight.line ? Math.max(0, insight.line - 1) : 0;
+    const range = doc.lineAt(Math.min(line, doc.lineCount - 1)).range;
 
-  // Stale command references
-  for (const ref of health.staleCommandRefs) {
-    const line = Math.max(0, ref.line - 1);
-    const range = doc.lineAt(line).range;
-    const diag = new vscode.Diagnostic(
-      range,
-      `Stale reference: \`${ref.reference}\` — script not in package.json`,
-      vscode.DiagnosticSeverity.Warning,
-    );
-    diag.code = 'stale-command-ref';
-    diag.source = 'cc-insights';
-    diagnostics.push(diag);
-  }
+    const severity = insight.severity === 'warning'
+      ? vscode.DiagnosticSeverity.Warning
+      : vscode.DiagnosticSeverity.Information;
 
-  // Bloat warning (lines OR tokens)
-  if (health.totalLines > DEFAULT_THRESHOLDS.claudemdBloatLines || health.estimatedTokens > DEFAULT_THRESHOLDS.claudemdBloatTokens) {
-    const range = doc.lineAt(0).range;
-    const topSection = [...health.sections].sort((a, b) => b.estimatedTokens - a.estimatedTokens)[0];
-    const diag = new vscode.Diagnostic(
-      range,
-      `CLAUDE.md is ${health.totalLines} lines (~${health.estimatedTokens} tokens). Consider splitting with @imports. Largest section: "${topSection?.heading}" (${topSection?.estimatedTokens} tokens)`,
-      vscode.DiagnosticSeverity.Warning,
-    );
-    diag.code = 'claudemd-bloat';
+    const fixable = insight.fix ? ' [fixable]' : '';
+    const diag = new vscode.Diagnostic(range, `${insight.message}${fixable}`, severity);
+    diag.code = insight.rule;
     diag.source = 'cc-insights';
     diagnostics.push(diag);
-  }
 
-  // Thin CLAUDE.md
-  if (health.totalLines < DEFAULT_THRESHOLDS.claudemdThinLines && health.totalLines > 0) {
-    const range = doc.lineAt(0).range;
-    const diag = new vscode.Diagnostic(
-      range,
-      `CLAUDE.md is only ${health.totalLines} lines. Add build/test commands, architecture section, and coding conventions.`,
-      vscode.DiagnosticSeverity.Information,
-    );
-    diag.code = 'thin-claudemd';
-    diag.source = 'cc-insights';
-    diagnostics.push(diag);
-  }
-
-  // Missing build commands
-  if (health.totalLines > 0 && !/\b(build|test|lint|dev|start|run)\b/i.test(doc.getText())) {
-    const range = doc.lineAt(0).range;
-    const diag = new vscode.Diagnostic(
-      range,
-      'No build/test commands found. Add verification commands so Claude can self-check its work.',
-      vscode.DiagnosticSeverity.Warning,
-    );
-    diag.code = 'missing-build-cmd';
-    diag.source = 'cc-insights';
-    diagnostics.push(diag);
+    // Store insight for quickfix
+    const insightLine = insight.line || 1;
+    insightStore.set(`${doc.uri.toString()}:${insightLine}:${insight.rule}`, insight);
   }
 
   diagnosticCollection.set(doc.uri, diagnostics);

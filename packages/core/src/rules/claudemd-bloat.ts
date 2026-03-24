@@ -22,7 +22,7 @@ export async function claudemdBloat(project: ProjectData, ctx: RuleContext): Pro
   return [
     {
       rule: 'claudemd-bloat',
-      severity: 'warning',
+      severity: 'info',
       category: 'claudemd',
       file: project.claudeMdPath,
       message: `CLAUDE.md is too long (${lineCount} lines, ~${totalTokens} tokens) — Claude reads the whole file every turn`,

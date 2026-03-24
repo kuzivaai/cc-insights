@@ -61,6 +61,19 @@ export interface HealthReport {
   staleCommandRefs: StaleReference[];
 }
 
+export interface InsightFix {
+  description: string;
+  startLine: number;
+  endLine: number;
+  newText: string;
+}
+
+export interface Suppression {
+  rule: string;
+  startLine: number;
+  endLine: number;
+}
+
 export interface Insight {
   rule: string;
   severity: 'info' | 'warning' | 'critical';
@@ -69,6 +82,7 @@ export interface Insight {
   line?: number;
   message: string;
   suggestedFix?: string;
+  fix?: InsightFix;
   evidence: Record<string, unknown>;
 }
 
@@ -94,6 +108,7 @@ export interface AnalyseOptions {
   claudeDir?: string;
   projects?: ProjectData[];
   thresholds?: Partial<Thresholds>;
+  suppressions?: Suppression[];
 }
 
 export interface AnalyseResult {

@@ -26,8 +26,22 @@
       {
         "command": "cc-insights.analyse",
         "title": "CC Insights: Analyse CLAUDE.md"
+      },
+      {
+        "command": "cc-insights.fixAll",
+        "title": "CC Insights: Fix All"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "CC Insights",
+      "properties": {
+        "ccInsights.fixOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Auto-fix CLAUDE.md issues on save"
+        }
+      }
+    }
   },
   "scripts": {
     "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap --conditions=require",

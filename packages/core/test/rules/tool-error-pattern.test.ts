@@ -60,7 +60,7 @@ describe('toolErrorPattern rule', () => {
     expect(insights).toHaveLength(1);
     expect(insights[0]).toMatchObject({
       rule: 'tool-error-pattern',
-      severity: 'warning',
+      severity: 'info',
       category: 'failure',
     });
     expect(insights[0].message).toContain('Bash');
