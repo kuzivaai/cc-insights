@@ -2,7 +2,7 @@
   "name": "cc-insights",
   "displayName": "CC Insights",
   "description": "Linter for CLAUDE.md files. Finds stale file references, missing build commands, and bloat. No telemetry.",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "author": "kuzivaai",
   "publisher": "kuzivaai",
   "repository": {

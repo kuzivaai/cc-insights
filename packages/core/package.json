@@ -1,6 +1,6 @@
 {
   "name": "@ccinsights/core",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Lint and analyse CLAUDE.md files. Finds stale references, bloat, missing commands, and tool failure patterns.",
   "author": "kuzivaai",
   "repository": {
@@ -10,6 +10,9 @@
   },
   "homepage": "https://github.com/kuzivaai/cc-insights",
   "bugs": "https://github.com/kuzivaai/cc-insights/issues",
+  "bin": {
+    "cc-insights": "./dist/cli.js"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",

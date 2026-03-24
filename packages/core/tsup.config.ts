@@ -14,4 +14,10 @@ export default defineConfig([
     dts: true,
     sourcemap: true,
   },
+  {
+    entry: { cli: 'src/cli.ts' },
+    format: ['esm'],
+    banner: { js: '#!/usr/bin/env node' },
+    sourcemap: true,
+  },
 ]);

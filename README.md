@@ -1,8 +1,16 @@
 # cc-insights
 
-Linter for CLAUDE.md files and Claude Code sessions. Finds stale references, bloat, missing commands, and tool failure patterns.
+Linter for CLAUDE.md files. Finds stale references, bloat, filler phrases, and missing commands. Auto-fixes everything it warns about.
 
-Ships as an npm library (`@ccinsights/core`) and a VS Code extension.
+Ships as an npm library (`@ccinsights/core`), a CLI, and a VS Code extension.
+
+## CLI
+
+```bash
+npx @ccinsights/core CLAUDE.md              # Lint
+npx @ccinsights/core CLAUDE.md --fix        # Lint and fix
+npx @ccinsights/core CLAUDE.md --fix --dry-run  # Preview fixes
+```
 
 ## Install
 
@@ -13,39 +21,53 @@ npm install @ccinsights/core
 
 **VS Code:** search "CC Insights" in the Extensions marketplace.
 
-## Library usage
+## Library Usage
 
 ```typescript
-import { analyse } from '@ccinsights/core';
+import { analyse, applyFixes } from '@ccinsights/core';
 
 const result = await analyse({ claudeDir: '~/.claude' });
 console.log(result.insights);
+
+// Auto-fix
+const fixed = applyFixes(content, result.insights);
 ```
 
-Each insight includes a `rule`, `severity`, `file`, `line`, and `suggestedFix`. Pass your own data instead of a directory path if you already have parsed sessions:
+## Rules (12)
 
-```typescript
-const result = await analyse({ projects: myParsedData });
-```
-
-## VS Code extension
-
-Open a CLAUDE.md file. Stale file and command references get underlined. Press `Ctrl+.` (or `Cmd+.`) on a warning for quick-fix options.
-
-## Rules
-
-| Rule | What it finds |
-|------|---------------|
-| `stale-file-ref` | File path in CLAUDE.md that no longer exists on disk |
-| `stale-command-ref` | npm script referenced in CLAUDE.md but missing from package.json |
-| `claudemd-bloat` | CLAUDE.md over 300 lines or 1800 tokens |
-| `thin-claudemd` | CLAUDE.md under 10 lines |
-| `missing-claudemd` | Project with sessions but no CLAUDE.md |
-| `missing-build-cmd` | No build/test/lint commands in CLAUDE.md |
-| `tool-error-pattern` | A tool failing at a high rate across sessions |
-| `false-starts` | Multiple very short sessions on the same day |
+| Rule | Severity | Auto-Fix |
+|------|----------|----------|
+| `stale-file-ref` | warning | Delete line |
+| `stale-command-ref` | warning | Delete line |
+| `stale-import` | warning | Delete line |
+| `missing-build-cmd` | warning | Append commands section |
+| `filler-phrase` | warning | Rewrite to direct form |
+| `no-structure` | warning | Add heading |
+| `redundant-config` | warning | Delete line |
+| `missing-claudemd` | warning | Generate scaffold |
+| `claudemd-bloat` | info | -- |
+| `thin-claudemd` | info | -- |
+| `tool-error-pattern` | info | -- |
+| `false-starts` | info | -- |
 
 All thresholds are configurable via `analyse({ thresholds: { ... } })`.
+
+## Suppression
+
+Disable a rule for a specific line with an inline comment:
+
+```markdown
+<!-- cc-insights-disable stale-file-ref -->
+`src/legacy.ts` is intentionally referenced.
+<!-- cc-insights-enable stale-file-ref -->
+```
+
+## VS Code Extension
+
+Open a CLAUDE.md file. Warnings appear inline. `Ctrl+.` / `Cmd+.` for quick-fixes.
+
+- **Fix All** command: `CC Insights: Fix All`
+- **Fix on save**: enable `ccInsights.fixOnSave` in settings
 
 ## Privacy
 
